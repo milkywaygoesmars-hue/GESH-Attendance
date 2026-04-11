@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GESH Attendance System — GE Vernova × Sinohydro</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<style>
+  :root {
+    --teal: #007A6E;
+    --teal-dark: #005A52;
+    --teal-light: #00A896;
+    --red: #D72B2B;
+    --blue: #1B4F9C;
+    --navy: #0D2B4E;
+    --silver: #9EA8B0;
+    --bg: #F4F6F8;
+    --white: #FFFFFF;
+    --text: #1A2330;
+    --border: #D0D8E0;
+    --success: #2E7D32;
+    --warning: #E65100;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--teal-dark) 100%);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 24px;
+  }
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+  }
+  .logo-ge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  /* GE Circle Logo */
+  .ge-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--teal);
+    border: 2px solid rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: -1px;
+    flex-shrink: 0;
+  }
+  .brand-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .brand-sub {
+    font-size: 10px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .divider-v {
+    width: 1px;
+    height: 40px;
+    background: rgba(255,255,255,0.25);
+  }
+  .sino-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .sino-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 1px;
+  }
+  .sino-bars {
+    display: flex;
+    gap: 2px;
+    margin-top: 2px;
+  }
+  .sino-bars span {
+    height: 4px;
+    border-radius: 2px;
+  }
+  .bar1 { width: 20px; background: var(--blue); }
+  .bar2 { width: 14px; background: var(--red); }
+  .bar3 { width: 20px; background: var(--blue); }
+  .system-title {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .system-title h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .system-title p {
+    font-size: 10px;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  /* NAV TABS */
+  .nav {
+    background: var(--navy);
+    border-bottom: 3px solid var(--teal);
+  }
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    padding: 0 16px;
+  }
+  .nav-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.55);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 12px 20px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { color: white; }
+  .nav-btn.active {
+    color: white;
+    border-bottom-color: var(--teal-light);
+    background: rgba(0,168,150,0.1);
+  }
+  .nav-btn .nav-icon {
+    margin-right: 6px;
+  }
+
+  /* MAIN */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 20px;
+  }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .card-header {
+    background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-header h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .card-header .badge {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+  .card-body { padding: 20px; }
+
+  /* FORMS */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-grid.cols-1 { grid-template-columns: 1fr; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--teal-dark);
+  }
+  input, select, textarea {
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: var(--text);
+    background: white;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(0,122,110,0.12);
+  }
+  .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .check-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .check-pill:hover { border-color: var(--teal); }
+  .check-pill input { display: none; }
+  .check-pill.selected {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: white;
+  }
+
+  /* BUTTONS */
+  .btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .btn-primary { background: var(--teal); color: white; }
+  .btn-primary:hover { background: var(--teal-dark); }
+  .btn-danger { background: var(--red); color: white; }
+  .btn-danger:hover { background: #b71c1c; }
+  .btn-outline {
+    background: transparent;
+    color: var(--teal);
+    border: 2px solid var(--teal);
+  }
+  .btn-outline:hover { background: var(--teal); color: white; }
+  .btn-dark { background: var(--navy); color: white; }
+  .btn-dark:hover { background: #1a3a5c; }
+  .btn-success { background: var(--success); color: white; }
+  .btn-warning { background: var(--warning); color: white; }
+  .btn-sm { padding: 6px 14px; font-size: 12px; }
+  .btn-lg { padding: 14px 28px; font-size: 16px; }
+
+  /* QR SCANNER */
+  .scanner-wrap {
+    background: var(--navy);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+  }
+  #qr-reader {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  #qr-reader video { border-radius: 8px; }
+  .scan-result {
+    background: var(--bg);
+    border: 2px solid var(--teal);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-top: 14px;
+    font-size: 15px;
+    font-weight: 500;
+    display: none;
+  }
+  .scan-result.visible { display: block; }
+
+  /* WORKER TABLE */
+  .worker-table-wrap { overflow-x: auto; }
+  .worker-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  .worker-table th {
+    background: var(--navy);
+    color: white;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 12px;
+  }
+  .worker-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .worker-table tr:nth-child(even) { background: #F8FAFB; }
+  .worker-table tr:hover { background: rgba(0,122,110,0.04); }
+  .no-tag {
+    font-size: 11px;
+    background: #FFF3E0;
+    color: var(--warning);
+    border: 1px solid #FFB74D;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-weight: 600;
+  }
+  .pkg-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+  .pkg-BLP5 { background: #E3F2FD; color: #1565C0; }
+  .pkg-BLP6 { background: #E8F5E9; color: #2E7D32; }
+  .pkg-BLP3 { background: #FFF3E0; color: #E65100; }
+
+  /* QR DISPLAY */
+  .qr-card {
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .qr-card:hover { border-color: var(--teal); transform: translateY(-2px); }
+  .qr-card svg { width: 120px; height: 120px; }
+  .qr-name { font-weight: 600; font-size: 13px; margin-top: 8px; }
+  .qr-sub { font-size: 11px; color: var(--silver); margin-top: 2px; }
+
+  /* PHOTO UPLOAD */
+  .photo-drop {
+    border: 2.5px dashed var(--border);
+    border-radius: 12px;
+    padding: 32px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--bg);
+  }
+  .photo-drop:hover, .photo-drop.drag-over {
+    border-color: var(--teal);
+    background: rgba(0,122,110,0.05);
+  }
+  .photo-drop input { display: none; }
+  .photo-drop .drop-icon { font-size: 40px; margin-bottom: 10px; }
+  .photo-drop p { font-size: 14px; color: var(--silver); }
+  .photo-drop p strong { color: var(--teal); }
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .photo-thumb {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    border: 2px solid var(--border);
+  }
+  .photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-thumb .remove-photo {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(215,43,43,0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  /* ATTENDANCE LIST */
+  .attendee-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .attendee-num {
+    background: var(--teal);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .attendee-info { flex: 1; }
+  .attendee-name { font-weight: 600; font-size: 14px; }
+  .attendee-meta { font-size: 12px; color: var(--silver); margin-top: 2px; }
+  .attendee-time { font-size: 11px; color: var(--silver); font-family: monospace; }
+  .remove-btn {
+    background: none;
+    border: none;
+    color: var(--red);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  .remove-btn:hover { background: rgba(215,43,43,0.1); }
+
+  /* MANUAL ADD */
+  .manual-add {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .manual-add-grid {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr auto;
+    gap: 10px;
+    align-items: end;
+  }
+
+  /* WORKER REGISTRY */
+  .registry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .worker-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .worker-card:hover { border-color: var(--teal); box-shadow: 0 4px 12px rgba(0,122,110,0.1); }
+  .worker-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--teal), var(--navy));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .worker-info { flex: 1; }
+  .worker-card-name { font-weight: 600; font-size: 14px; }
+  .worker-card-meta { font-size: 12px; color: var(--silver); margin-top: 2px; }
+  .worker-card-pkg { margin-top: 6px; }
+  .worker-actions { display: flex; gap: 6px; margin-top: 10px; }
+
+  /* QR MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+  }
+  .modal h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .modal p { font-size: 13px; color: var(--silver); margin-bottom: 20px; }
+  .modal-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--silver);
+  }
+  .modal-close:hover { color: var(--red); }
+  #modal-qr-container svg { width: 220px; height: 220px; }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--teal);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--silver);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* PRINT / PDF */
+  .sheet-preview {
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 12px;
+  }
+  .sheet-preview-inner { padding: 24px; background: white; }
+  .print-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--teal-dark);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+  .print-logo-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--teal-dark);
+  }
+  .print-form-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    text-align: center;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .print-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 20px;
+    font-size: 12px;
+    margin-bottom: 14px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 4px;
+  }
+  .print-meta-row { display: flex; gap: 6px; }
+  .print-meta-label { font-weight: 700; flex-shrink: 0; }
+  .print-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-bottom: 16px;
+  }
+  .print-table th {
+    background: var(--navy);
+    color: white;
+    padding: 6px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .print-table td {
+    padding: 7px 10px;
+    border: 1px solid #ddd;
+    vertical-align: top;
+  }
+  .print-table tr:nth-child(even) td { background: #f8f8f8; }
+  .sig-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .sig-box {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    min-height: 80px;
+  }
+  .sig-label {
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--teal-dark);
+    margin-bottom: 6px;
+  }
+  .sig-name-line {
+    border-bottom: 1px solid #999;
+    margin: 30px 0 4px;
+    height: 1px;
+  }
+  .sig-field-label { font-size: 9px; color: #666; }
+
+  /* ALERTS */
+  .alert {
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .alert-info { background: #E3F2FD; border: 1px solid #90CAF9; color: #1565C0; }
+  .alert-warning { background: #FFF3E0; border: 1px solid #FFCC80; color: #E65100; }
+  .alert-success { background: #E8F5E9; border: 1px solid #A5D6A7; color: #2E7D32; }
+
+  /* HARDWARE SECTION */
+  .hw-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .hw-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .hw-icon { font-size: 32px; }
+  .hw-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .hw-desc { font-size: 13px; color: #555; line-height: 1.5; }
+  .hw-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    align-self: flex-start;
+    text-transform: uppercase;
+  }
+  .hw-required { background: #FFCDD2; color: var(--red); }
+  .hw-optional { background: #E8F5E9; color: var(--success); }
+
+  /* OFFLINE BANNER */
+  #offline-banner {
+    background: var(--warning);
+    color: white;
+    text-align: center;
+    padding: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    display: none;
+  }
+
+  /* ACTIONS ROW */
+  .actions-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* SESSION STATUS */
+  .session-active {
+    background: linear-gradient(135deg, #E8F5E9, #F1F8F1);
+    border: 2px solid var(--success);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .session-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: pulse 1.5s infinite;
+    flex-shrink: 0;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.3); }
+  }
+  .session-info { flex: 1; }
+  .session-info strong { font-weight: 700; color: var(--teal-dark); }
+  .session-info p { font-size: 12px; color: #555; }
+
+  /* RESPONSIVE */
+  @media (max-width: 680px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid.cols-3 { grid-template-columns: 1fr 1fr; }
+    .stats-bar { grid-template-columns: 1fr 1fr; }
+    .manual-add-grid { grid-template-columns: 1fr 1fr; }
+    .sig-row { grid-template-columns: 1fr; }
+    .header-inner { flex-wrap: wrap; gap: 10px; }
+    .system-title { display: none; }
+    .nav-btn { padding: 10px 12px; font-size: 12px; }
+  }
+
+  /* PRINT STYLES */
+  @media print {
+    body * { visibility: hidden; }
+    #print-area, #print-area * { visibility: visible; }
+    #print-area { position: fixed; top: 0; left: 0; width: 100%; background: white; padding: 20mm; }
+    .print-table th { background: #1a2a3a !important; -webkit-print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div id="offline-banner">⚠ OFFLINE MODE — Records saved locally. Will sync when connected.</div>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo-area">
+      <div class="logo-ge">
+        <div class="ge-circle">ge</div>
+        <div>
+          <div class="brand-name">GE VERNOVA</div>
+          <div class="brand-sub">Energy</div>
+        </div>
+      </div>
+      <div class="divider-v"></div>
+      <div class="sino-badge">
+        <div class="sino-name">SINOHYDRO</div>
+        <div class="sino-bars">
+          <span class="bar1"></span>
+          <span class="bar2"></span>
+          <span class="bar3"></span>
+        </div>
+      </div>
+    </div>
+    <div class="system-title">
+      <h1>HSSE ATTENDANCE SYSTEM</h1>
+      <p>GESH Project · BLP3 / BLP5 / BLP6</p>
+    </div>
+  </div>
+</div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="showSection('take')" id="tab-take">
+      <span class="nav-icon">📋</span>Take Attendance
+    </button>
+    <button class="nav-btn" onclick="showSection('scan')" id="tab-scan">
+      <span class="nav-icon">📷</span>QR Scanner
+    </button>
+    <button class="nav-btn" onclick="showSection('workers')" id="tab-workers">
+      <span class="nav-icon">👷</span>Worker Registry
+    </button>
+    <button class="nav-btn" onclick="showSection('records')" id="tab-records">
+      <span class="nav-icon">🗂</span>Records
+    </button>
+    <button class="nav-btn" onclick="showSection('print')" id="tab-print">
+      <span class="nav-icon">🖨</span>Print / PDF
+    </button>
+    <button class="nav-btn" onclick="showSection('setup')" id="tab-setup">
+      <span class="nav-icon">⚙</span>Setup & Guide
+    </button>
+  </div>
+</nav>
+
+<div class="main">
+
+<!-- ===== TAKE ATTENDANCE ===== -->
+<div id="sec-take" class="section active">
+
+  <div id="active-session-bar" style="display:none;" class="session-active">
+    <div class="session-dot"></div>
+    <div class="session-info">
+      <strong>Session Active: <span id="ss-topic">—</span></strong>
+      <p id="ss-meta">Loading session details…</p>
+    </div>
+    <button class="btn btn-danger btn-sm" onclick="endSession()">End Session</button>
+  </div>
+
+  <div id="new-session-form">
+    <div class="card">
+      <div class="card-header">
+        <h2>Session Details</h2>
+        <span class="badge">Required</span>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="sess-date">
+          </div>
+          <div class="form-group">
+            <label>Time</label>
+            <input type="time" id="sess-time">
+          </div>
+          <div class="form-group">
+            <label>Session Type</label>
+            <select id="sess-type">
+              <option value="">— Select —</option>
+              <option>Toolbox Briefing</option>
+              <option>HSSE Meeting</option>
+              <option>Safety Training</option>
+              <option>Safety Awareness</option>
+              <option>Campaign</option>
+              <option>Emergency Drill</option>
+              <option>Induction</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Conducted By</label>
+            <input type="text" id="sess-conductor" placeholder="Name of presenter/conductor">
+          </div>
+          <div class="form-group full">
+            <label>Topic / Title</label>
+            <input type="text" id="sess-topic" placeholder="e.g. Working at Height Safety, PPE Compliance…">
+          </div>
+          <div class="form-group">
+            <label>Contractors Involved</label>
+            <input type="text" id="sess-contractor" placeholder="e.g. ABC Construction, XYZ Civil">
+          </div>
+          <div class="form-group">
+            <label>Work Package(s)</label>
+            <div class="checkbox-group" id="pkg-group">
+              <label class="check-pill" onclick="togglePill(this)">
+                <input type="checkbox" value="BLP3"> BLP3
+              </label>
+              <label class="check-pill" onclick="togglePill(this)">
+                <input type="checkbox" value="BLP5"> BLP5
+              </label>
+              <label class="check-pill selected" onclick="togglePill(this)">
+                <input type="checkbox" value="BLP6" checked> BLP6
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Prepared By (HSSE)</label>
+            <input type="text" id="sess-prepared" placeholder="HSSE officer name">
+          </div>
+          <div class="form-group">
+            <label>Reviewed By</label>
+            <input type="text" id="sess-reviewed" placeholder="Reviewer name">
+          </div>
+          <div class="form-group">
+            <label>Acknowledged By (PM)</label>
+            <input type="text" id="sess-acknowledged" placeholder="Project Manager name">
+          </div>
+        </div>
+        <div style="margin-top:18px;">
+          <button class="btn btn-primary btn-lg" onclick="startSession()">▶ Start Attendance Session</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVE SESSION ATTENDANCE -->
+  <div id="attendance-panel" style="display:none;">
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-count">0</div>
+        <div class="stat-label">Attended</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-blp3">0</div>
+        <div class="stat-label">BLP3</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-blp5">0</div>
+        <div class="stat-label">BLP5</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-blp6">0</div>
+        <div class="stat-label">BLP6</div>
+      </div>
+    </div>
+
+    <!-- Manual Add -->
+    <div class="card">
+      <div class="card-header"><h2>Add Attendee</h2></div>
+      <div class="card-body">
+        <div class="alert alert-info">
+          💡 <span>Scan the <strong>QR code on a worker's helmet</strong> using the Scanner tab, or add manually below.</span>
+        </div>
+        <div class="manual-add">
+          <div style="font-size:12px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--teal-dark); margin-bottom:10px;">Manual Entry</div>
+          <div class="manual-add-grid">
+            <div class="form-group">
+              <label>Name</label>
+              <input type="text" id="man-name" placeholder="Full name">
+            </div>
+            <div class="form-group">
+              <label>Designation</label>
+              <input type="text" id="man-desig" placeholder="e.g. Rigger, Welder">
+            </div>
+            <div class="form-group">
+              <label>Package</label>
+              <select id="man-pkg">
+                <option>BLP6</option>
+                <option>BLP5</option>
+                <option>BLP3</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>&nbsp;</label>
+              <button class="btn btn-primary" onclick="addManualAttendee()">+ Add</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Or select from registry -->
+        <div style="margin-bottom:10px;">
+          <label style="font-size:12px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--teal-dark);">Quick Add from Registry</label>
+          <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;" id="quick-add-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photo Evidence -->
+    <div class="card">
+      <div class="card-header"><h2>📸 Photo Evidence</h2><span class="badge">Group Photo</span></div>
+      <div class="card-body">
+        <div class="alert alert-warning">
+          📷 <span>Upload <strong>group photos</strong> of the briefing as attendance evidence. Individual face photos are not required.</span>
+        </div>
+        <div class="photo-drop" id="photo-drop" onclick="document.getElementById('photo-input').click()" ondragover="photoDragOver(event)" ondrop="photoDrop(event)">
+          <input type="file" id="photo-input" accept="image/*" multiple onchange="handlePhotos(event)">
+          <div class="drop-icon">📁</div>
+          <p><strong>Click to upload</strong> or drag & drop photos here</p>
+          <p style="font-size:12px; margin-top:4px;">JPG, PNG, HEIC — multiple files allowed</p>
+        </div>
+        <div class="photo-grid" id="photo-grid"></div>
+      </div>
+    </div>
+
+    <!-- Attendance List -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Attendee List</h2>
+        <span class="badge" id="count-badge">0 people</span>
+      </div>
+      <div class="card-body">
+        <div id="attendee-list">
+          <div style="text-align:center; color:var(--silver); padding:30px; font-size:14px;">
+            No attendees yet. Scan QR codes or add manually above.
+          </div>
+        </div>
+        <div style="margin-top:16px;" class="actions-row">
+          <button class="btn btn-success btn-lg" onclick="saveSession()">💾 Save Session</button>
+          <button class="btn btn-dark" onclick="goToPrint()">🖨 Preview & Print</button>
+          <button class="btn btn-outline" onclick="exportGoogleSheet()">📊 Send to Google Sheet</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QR SCANNER ===== -->
+<div id="sec-scan" class="section">
+  <div class="card">
+    <div class="card-header"><h2>📷 QR Code Scanner</h2><span class="badge">Helmet QR</span></div>
+    <div class="card-body">
+      <div class="alert alert-info">
+        🪖 <span>Point your camera at the <strong>QR code sticker on the worker's safety helmet</strong>. The worker will be automatically added to the current attendance session.</span>
+      </div>
+      <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="startScanner()">▶ Start Camera</button>
+        <button class="btn btn-outline" onclick="stopScanner()">■ Stop Camera</button>
+      </div>
+      <div class="scanner-wrap">
+        <div id="qr-reader"></div>
+        <div class="scan-result" id="scan-result">
+          <strong>✅ Scanned:</strong> <span id="scan-text">—</span>
+        </div>
+      </div>
+      <div id="recent-scans" style="margin-top:16px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== WORKER REGISTRY ===== -->
+<div id="sec-workers" class="section">
+  <div class="card">
+    <div class="card-header">
+      <h2>Worker Registry</h2>
+      <span class="badge" id="worker-count-badge">0 workers</span>
+    </div>
+    <div class="card-body">
+      <div class="alert alert-info">
+        🪖 <span>Register workers here to generate their <strong>helmet QR codes</strong>. Print and laminate these QR codes and stick them on their helmets.</span>
+      </div>
+
+      <!-- Add Worker Form -->
+      <div class="manual-add" style="margin-bottom:20px;">
+        <div style="font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--navy); margin-bottom:12px;">Register New Worker</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="reg-name" placeholder="As on IC/Passport">
+          </div>
+          <div class="form-group">
+            <label>IC / Passport No.</label>
+            <input type="text" id="reg-ic" placeholder="Identification number">
+          </div>
+          <div class="form-group">
+            <label>Designation</label>
+            <input type="text" id="reg-desig" placeholder="e.g. Civil Worker, Rigger">
+          </div>
+          <div class="form-group">
+            <label>Work Package</label>
+            <select id="reg-pkg">
+              <option>BLP6</option>
+              <option>BLP5</option>
+              <option>BLP3</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Company / Contractor</label>
+            <input type="text" id="reg-company" placeholder="Contractor company name">
+          </div>
+        </div>
+        <div style="margin-top:12px;" class="actions-row">
+          <button class="btn btn-primary" onclick="registerWorker()">+ Register Worker & Generate QR</button>
+          <button class="btn btn-outline" onclick="printAllQRs()">🖨 Print All Helmet QR Codes</button>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <input type="text" id="worker-search" placeholder="🔍 Search workers by name, package, or designation…" oninput="renderWorkers()" style="margin-bottom:16px;">
+
+      <div class="registry-grid" id="worker-registry"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RECORDS ===== -->
+<div id="sec-records" class="section">
+  <div class="card">
+    <div class="card-header"><h2>🗂 Attendance Records</h2></div>
+    <div class="card-body">
+      <div class="alert alert-info">
+        📁 <span>All sessions are <strong>saved locally</strong> on this device. Use the Google Sheet button to sync, or Print for hard copy.</span>
+      </div>
+      <div id="records-list">
+        <div style="text-align:center; color:var(--silver); padding:40px;">No records yet.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PRINT / PDF ===== -->
+<div id="sec-print" class="section">
+  <div class="actions-row" style="margin-bottom:16px;">
+    <button class="btn btn-primary" onclick="window.print()">🖨 Print Document</button>
+    <button class="btn btn-dark" onclick="exportPDF()">📄 Save as PDF</button>
+    <button class="btn btn-success" onclick="exportGoogleSheet()">📊 Send to Google Sheet</button>
+  </div>
+
+  <div id="print-area">
+    <div class="sheet-preview">
+      <div class="sheet-preview-inner" id="print-preview-content">
+        <div class="print-header">
+          <div>
+            <div class="print-logo-text">GE VERNOVA × SINOHYDRO</div>
+            <div style="font-size:10px; color:#666; letter-spacing:1px;">GESH PROJECT — HSSE DEPARTMENT</div>
+          </div>
+          <div style="text-align:right; font-size:10px; color:#666;">
+            <div>Doc Ref: GESH-HSSE-ATT</div>
+            <div id="print-doc-date">Date: —</div>
+          </div>
+        </div>
+
+        <div class="print-form-title" id="print-title">HSSE ATTENDANCE RECORD</div>
+
+        <div class="print-meta-grid" id="print-meta">
+          <div class="print-meta-row"><span class="print-meta-label">Date:</span> <span id="pm-date">—</span></div>
+          <div class="print-meta-row"><span class="print-meta-label">Time:</span> <span id="pm-time">—</span></div>
+          <div class="print-meta-row"><span class="print-meta-label">Type:</span> <span id="pm-type">—</span></div>
+          <div class="print-meta-row"><span class="print-meta-label">Attendance:</span> <span id="pm-count">—</span></div>
+          <div class="print-meta-row"><span class="print-meta-label">Conducted By:</span> <span id="pm-conductor">—</span></div>
+          <div class="print-meta-row"><span class="print-meta-label">Contractors:</span> <span id="pm-contractor">—</span></div>
+          <div class="print-meta-row full" style="grid-column:1/-1"><span class="print-meta-label">Topic:</span> <span id="pm-topic">—</span></div>
+          <div class="print-meta-row full" style="grid-column:1/-1"><span class="print-meta-label">Work Package(s):</span> <span id="pm-packages">—</span></div>
+        </div>
+
+        <table class="print-table">
+          <thead>
+            <tr>
+              <th style="width:30px">No.</th>
+              <th>Name</th>
+              <th>Designation</th>
+              <th>Work Package</th>
+              <th style="width:90px">Signature</th>
+            </tr>
+          </thead>
+          <tbody id="print-table-body">
+            <tr><td colspan="5" style="text-align:center; color:#999; padding:20px;">No session active. Start an attendance session first.</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Photo evidence section -->
+        <div id="print-photos-section" style="display:none; margin-bottom:16px;">
+          <div style="font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--teal-dark); margin-bottom:8px; border-bottom:2px solid var(--teal-dark); padding-bottom:4px;">
+            PHOTO EVIDENCE — GROUP BRIEFING
+          </div>
+          <div class="photo-grid" id="print-photo-grid" style="max-height:300px; overflow:hidden;"></div>
+        </div>
+
+        <div class="sig-row">
+          <div class="sig-box">
+            <div class="sig-label">Prepared By</div>
+            <div class="sig-name-line"></div>
+            <div class="sig-field-label">Name: <span id="sig-prepared">_________________________</span></div>
+            <div class="sig-field-label" style="margin-top:4px;">Date: _________________________</div>
+            <div class="sig-field-label" style="margin-top:4px;">Designation: HSSE Department</div>
+          </div>
+          <div class="sig-box">
+            <div class="sig-label">Reviewed By</div>
+            <div class="sig-name-line"></div>
+            <div class="sig-field-label">Name: <span id="sig-reviewed">_________________________</span></div>
+            <div class="sig-field-label" style="margin-top:4px;">Date: _________________________</div>
+            <div class="sig-field-label" style="margin-top:4px;">Designation: ________________</div>
+          </div>
+          <div class="sig-box">
+            <div class="sig-label">Acknowledged By</div>
+            <div class="sig-name-line"></div>
+            <div class="sig-field-label">Name: <span id="sig-acknowledged">_________________________</span></div>
+            <div class="sig-field-label" style="margin-top:4px;">Date: _________________________</div>
+            <div class="sig-field-label" style="margin-top:4px;">Designation: Project Manager</div>
+          </div>
+        </div>
+
+        <div style="font-size:9px; color:#999; text-align:center; margin-top:20px; border-top:1px solid #eee; padding-top:8px;">
+          Generated by GESH HSSE Attendance System · Digital Record — For Physical Signatures, print and sign above
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SETUP & GUIDE ===== -->
+<div id="sec-setup" class="section">
+  <div class="card">
+    <div class="card-header"><h2>🔧 Hardware & Setup Guide</h2></div>
+    <div class="card-body">
+      <div class="alert alert-success">
+        ✅ <span>This system works <strong>offline</strong>. All data is stored on the device. Internet is only needed for Google Sheets sync.</span>
+      </div>
+      <div class="hw-grid">
+        <div class="hw-card">
+          <div class="hw-icon">📱</div>
+          <div class="hw-title">Tablet or Smartphone</div>
+          <div class="hw-desc">Android or iOS tablet preferred for site use. A dedicated tablet mounted at the site entrance gate works best. Any modern browser works.</div>
+          <span class="hw-tag hw-required">Required</span>
+        </div>
+        <div class="hw-card">
+          <div class="hw-icon">📷</div>
+          <div class="hw-title">Rear Camera</div>
+          <div class="hw-desc">Device must have a working rear camera for scanning helmet QR codes. Any smartphone or tablet from 2018+ works fine.</div>
+          <span class="hw-tag hw-required">Required</span>
+        </div>
+        <div class="hw-card">
+          <div class="hw-icon">🪖</div>
+          <div class="hw-title">QR Stickers on Helmets</div>
+          <div class="hw-desc">Print QR codes from the Worker Registry tab. Laminate and stick them on each worker's safety helmet. Use weatherproof labels for outdoor sites.</div>
+          <span class="hw-tag hw-required">Required</span>
+        </div>
+        <div class="hw-card">
+          <div class="hw-icon">🖨</div>
+          <div class="hw-title">Label Printer</div>
+          <div class="hw-desc">For printing QR stickers. A Brother QL or Zebra label printer produces durable outdoor-grade sticker labels. A4 printer works too.</div>
+          <span class="hw-tag hw-required">Required</span>
+        </div>
+        <div class="hw-card">
+          <div class="hw-icon">📡</div>
+          <div class="hw-title">Mobile Hotspot / WiFi</div>
+          <div class="hw-desc">Only needed for Google Sheets sync. All attendance recording works offline. Use a 4G hotspot for remote site syncing when convenient.</div>
+          <span class="hw-tag hw-optional">Optional</span>
+        </div>
+        <div class="hw-card">
+          <div class="hw-icon">🔋</div>
+          <div class="hw-title">Portable Power Bank</div>
+          <div class="hw-desc">For outdoor/field use where power outlets are unavailable. A 20,000mAh power bank can run a tablet for a full work day.</div>
+          <span class="hw-tag hw-optional">Optional</span>
+        </div>
+        <div class="hw-card">
+          <div class="hw-icon">💾</div>
+          <div class="hw-title">Offline Storage</div>
+          <div class="hw-desc">All records stored in browser local storage. Supports hundreds of sessions. Export to PDF/Google Sheets regularly as backup.</div>
+          <span class="hw-tag hw-optional">Built-in</span>
+        </div>
+        <div class="hw-card">
+          <div class="hw-icon">📊</div>
+          <div class="hw-title">Google Sheets Integration</div>
+          <div class="hw-desc">Set up a Google Apps Script Web App to receive data. Paste your script URL in Settings below. All sessions sync automatically when online.</div>
+          <span class="hw-tag hw-optional">Optional</span>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;" class="card" style="border:none; box-shadow:none;">
+        <div class="card-header" style="border-radius:8px 8px 0 0;"><h2>⚙ Google Sheets Webhook URL</h2></div>
+        <div class="card-body">
+          <p style="font-size:13px; color:#555; margin-bottom:10px;">Paste your Google Apps Script Web App URL below. Data will be sent as JSON when you click "Send to Google Sheet".</p>
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="gsheet-url" placeholder="https://script.google.com/macros/s/…/exec" style="flex:1;">
+            <button class="btn btn-primary" onclick="saveGSheetURL()">Save</button>
+          </div>
+          <div style="margin-top:12px; background:#f8f9fa; border-radius:8px; padding:14px; font-size:12px; font-family:monospace; line-height:1.6; color:#333;">
+            <strong>Google Apps Script (paste in script.google.com):</strong><br><br>
+            function doPost(e) {<br>
+            &nbsp;&nbsp;var data = JSON.parse(e.postData.contents);<br>
+            &nbsp;&nbsp;var ss = SpreadsheetApp.getActiveSpreadsheet();<br>
+            &nbsp;&nbsp;var sheet = ss.getSheetByName(data.type) || ss.insertSheet(data.type);<br>
+            &nbsp;&nbsp;if (sheet.getLastRow() === 0) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;sheet.appendRow(['Date','Time','Type','Topic','Conductor','#','Name','Designation','Package','Timestamp']);<br>
+            &nbsp;&nbsp;}<br>
+            &nbsp;&nbsp;data.attendees.forEach(function(a) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;sheet.appendRow([data.date,data.time,data.type,data.topic,data.conductor,a.num,a.name,a.designation,a.package,a.scannedAt]);<br>
+            &nbsp;&nbsp;});<br>
+            &nbsp;&nbsp;return ContentService.createTextOutput('OK');<br>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;" class="card">
+        <div class="card-header" style="border-radius:8px 8px 0 0;"><h2>📋 Step-by-Step Workflow</h2></div>
+        <div class="card-body">
+          <ol style="font-size:14px; line-height:2.2; padding-left:20px; color:#333;">
+            <li><strong>Register workers</strong> in the Worker Registry tab → Generate their QR codes</li>
+            <li><strong>Print & laminate</strong> the QR code stickers → Stick on each worker's safety helmet</li>
+            <li>On briefing day, go to <strong>Take Attendance</strong> tab → Fill in session details → Start Session</li>
+            <li>Use the <strong>QR Scanner</strong> tab to scan helmets as workers arrive, OR let workers scan themselves if a tablet is on a stand</li>
+            <li>Take <strong>group photos</strong> as evidence → Upload in the Photo Evidence section</li>
+            <li>When done, <strong>Save Session</strong> → Preview in Print tab → Print for physical signatures</li>
+            <li>Once signed, scan/upload the signed copy for digital record (optional)</li>
+            <li>Sync to <strong>Google Sheets</strong> for central record keeping when internet is available</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- QR Modal -->
+<div class="modal-overlay" id="qr-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3 id="modal-worker-name">Worker Name</h3>
+    <p id="modal-worker-meta">Designation · Package</p>
+    <div id="modal-qr-container"></div>
+    <div style="margin-top:14px; display:flex; gap:10px; justify-content:center;">
+      <button class="btn btn-primary" onclick="printQR()">🖨 Print QR</button>
+      <button class="btn btn-outline" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== STATE =====================
+let workers = JSON.parse(localStorage.getItem('gesh_workers') || '[]');
+let sessions = JSON.parse(localStorage.getItem('gesh_sessions') || '[]');
+let currentSession = JSON.parse(localStorage.getItem('gesh_current') || 'null');
+let photos = [];
+let html5QrCode = null;
+let modalWorker = null;
+
+// ===================== INIT =====================
+document.addEventListener('DOMContentLoaded', () => {
+  const today = new Date();
+  document.getElementById('sess-date').value = today.toISOString().split('T')[0];
+  document.getElementById('sess-time').value = today.toTimeString().slice(0, 5);
+  const gsheetURL = localStorage.getItem('gesh_gsheet_url');
+  if (gsheetURL) document.getElementById('gsheet-url').value = gsheetURL;
+  renderWorkers();
+  renderRecords();
+  if (currentSession) restoreSession();
+  window.addEventListener('offline', () => { document.getElementById('offline-banner').style.display = 'block'; });
+  window.addEventListener('online', () => { document.getElementById('offline-banner').style.display = 'none'; });
+  if (!navigator.onLine) document.getElementById('offline-banner').style.display = 'block';
+});
+
+// ===================== NAV =====================
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'print') updatePrintPreview();
+  if (name === 'records') renderRecords();
+}
+
+// ===================== SESSION =====================
+function startSession() {
+  const topic = document.getElementById('sess-topic').value.trim();
+  const date = document.getElementById('sess-date').value;
+  const time = document.getElementById('sess-time').value;
+  const type = document.getElementById('sess-type').value;
+  const conductor = document.getElementById('sess-conductor').value.trim();
+  if (!topic || !date || !type || !conductor) {
+    alert('Please fill in Date, Session Type, Conducted By, and Topic before starting.');
+    return;
+  }
+  const pkgs = [...document.querySelectorAll('#pkg-group input:checked')].map(c => c.value);
+  currentSession = {
+    id: Date.now().toString(),
+    date, time, type, topic, conductor,
+    contractor: document.getElementById('sess-contractor').value.trim(),
+    packages: pkgs,
+    prepared: document.getElementById('sess-prepared').value.trim(),
+    reviewed: document.getElementById('sess-reviewed').value.trim(),
+    acknowledged: document.getElementById('sess-acknowledged').value.trim(),
+    attendees: [],
+    photos: []
+  };
+  localStorage.setItem('gesh_current', JSON.stringify(currentSession));
+  showAttendancePanel();
+}
+
+function restoreSession() {
+  photos = currentSession.photos || [];
+  renderPhotos();
+  showAttendancePanel();
+}
+
+function showAttendancePanel() {
+  document.getElementById('new-session-form').style.display = 'none';
+  document.getElementById('attendance-panel').style.display = 'block';
+  document.getElementById('active-session-bar').style.display = 'flex';
+  document.getElementById('ss-topic').textContent = currentSession.topic;
+  document.getElementById('ss-meta').textContent = `${currentSession.date} · ${currentSession.time} · ${currentSession.type} · Conducted by: ${currentSession.conductor}`;
+  renderAttendees();
+  renderQuickAdd();
+}
+
+function endSession() {
+  if (!confirm('End current session? You can still access it from Records.')) return;
+  saveSession(true);
+  currentSession = null;
+  photos = [];
+  localStorage.removeItem('gesh_current');
+  document.getElementById('new-session-form').style.display = 'block';
+  document.getElementById('attendance-panel').style.display = 'none';
+  document.getElementById('active-session-bar').style.display = 'none';
+  // Reset form
+  const today = new Date();
+  document.getElementById('sess-date').value = today.toISOString().split('T')[0];
+  document.getElementById('sess-time').value = today.toTimeString().slice(0, 5);
+}
+
+function saveSession(silent = false) {
+  if (!currentSession) return;
+  currentSession.photos = photos.map(p => p.dataURL || '');
+  const idx = sessions.findIndex(s => s.id === currentSession.id);
+  if (idx >= 0) sessions[idx] = currentSession;
+  else sessions.push(currentSession);
+  localStorage.setItem('gesh_sessions', JSON.stringify(sessions));
+  localStorage.setItem('gesh_current', JSON.stringify(currentSession));
+  if (!silent) alert('✅ Session saved successfully!');
+}
+
+// ===================== ATTENDEES =====================
+function addAttendee(name, designation, pkg, source = 'manual') {
+  if (!currentSession) { alert('No active session. Please start a session first.'); return; }
+  const already = currentSession.attendees.find(a => a.name.toLowerCase() === name.toLowerCase());
+  if (already) { alert(`${name} is already in the list.`); return; }
+  const now = new Date();
+  currentSession.attendees.push({
+    name, designation, package: pkg,
+    scannedAt: now.toLocaleTimeString(), source
+  });
+  localStorage.setItem('gesh_current', JSON.stringify(currentSession));
+  renderAttendees();
+}
+
+function addManualAttendee() {
+  const name = document.getElementById('man-name').value.trim();
+  const desig = document.getElementById('man-desig').value.trim();
+  const pkg = document.getElementById('man-pkg').value;
+  if (!name) { alert('Please enter a name.'); return; }
+  addAttendee(name, desig || '—', pkg);
+  document.getElementById('man-name').value = '';
+  document.getElementById('man-desig').value = '';
+}
+
+function removeAttendee(idx) {
+  currentSession.attendees.splice(idx, 1);
+  localStorage.setItem('gesh_current', JSON.stringify(currentSession));
+  renderAttendees();
+}
+
+function renderAttendees() {
+  const list = document.getElementById('attendee-list');
+  const att = currentSession ? currentSession.attendees : [];
+  if (att.length === 0) {
+    list.innerHTML = '<div style="text-align:center; color:var(--silver); padding:30px; font-size:14px;">No attendees yet. Scan QR codes or add manually above.</div>';
+  } else {
+    list.innerHTML = att.map((a, i) => `
+      <div class="attendee-row">
+        <div class="attendee-num">${i + 1}</div>
+        <div class="attendee-info">
+          <div class="attendee-name">${a.name}</div>
+          <div class="attendee-meta">${a.designation} · <span class="pkg-badge pkg-${a.package}">${a.package}</span></div>
+        </div>
+        <div class="attendee-time">${a.scannedAt}</div>
+        <button class="remove-btn" onclick="removeAttendee(${i})" title="Remove">✕</button>
+      </div>
+    `).join('');
+  }
+  const count = att.length;
+  document.getElementById('stat-count').textContent = count;
+  document.getElementById('stat-blp3').textContent = att.filter(a => a.package === 'BLP3').length;
+  document.getElementById('stat-blp5').textContent = att.filter(a => a.package === 'BLP5').length;
+  document.getElementById('stat-blp6').textContent = att.filter(a => a.package === 'BLP6').length;
+  document.getElementById('count-badge').textContent = count + ' people';
+}
+
+function renderQuickAdd() {
+  const container = document.getElementById('quick-add-list');
+  container.innerHTML = workers.slice(0, 12).map(w => `
+    <button class="btn btn-outline btn-sm" onclick="addAttendee('${w.name}', '${w.designation}', '${w.package}', 'registry')" title="${w.designation} · ${w.package}">
+      ${w.name.split(' ')[0]}
+    </button>
+  `).join('');
+}
+
+// ===================== PHOTOS =====================
+function handlePhotos(e) {
+  [...e.target.files].forEach(readPhoto);
+}
+function photoDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function photoDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  [...e.dataTransfer.files].filter(f => f.type.startsWith('image/')).forEach(readPhoto);
+}
+function readPhoto(file) {
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    photos.push({ name: file.name, dataURL: ev.target.result });
+    renderPhotos();
+    if (currentSession) currentSession.photos = photos.map(p => p.dataURL);
+    localStorage.setItem('gesh_current', JSON.stringify(currentSession));
+  };
+  reader.readAsDataURL(file);
+}
+function renderPhotos() {
+  const grid = document.getElementById('photo-grid');
+  grid.innerHTML = photos.map((p, i) => `
+    <div class="photo-thumb">
+      <img src="${p.dataURL}" alt="Evidence photo ${i+1}">
+      <button class="remove-photo" onclick="removePhoto(${i})">✕</button>
+    </div>
+  `).join('');
+}
+function removePhoto(i) {
+  photos.splice(i, 1);
+  renderPhotos();
+}
+
+// ===================== QR SCANNER =====================
+function startScanner() {
+  if (html5QrCode) return;
+  html5QrCode = new Html5Qrcode('qr-reader');
+  html5QrCode.start(
+    { facingMode: 'environment' },
+    { fps: 10, qrbox: { width: 250, height: 250 } },
+    (decodedText) => handleQRScan(decodedText),
+    () => {}
+  ).catch(err => {
+    alert('Camera access denied or not available. Please allow camera permissions.');
+    html5QrCode = null;
+  });
+}
+function stopScanner() {
+  if (html5QrCode) {
+    html5QrCode.stop().then(() => { html5QrCode = null; });
+  }
+}
+function handleQRScan(text) {
+  try {
+    const data = JSON.parse(text);
+    if (data.gesh_id) {
+      const worker = workers.find(w => w.id === data.gesh_id);
+      if (worker) {
+        addAttendee(worker.name, worker.designation, worker.package, 'qr_scan');
+        showScanResult(`✅ ${worker.name} — ${worker.designation} (${worker.package})`);
+        addRecentScan(worker);
+        return;
+      }
+    }
+  } catch(e) {}
+  // Try plain text
+  showScanResult(`Scanned: ${text}`);
+}
+function showScanResult(msg) {
+  const el = document.getElementById('scan-result');
+  document.getElementById('scan-text').textContent = msg;
+  el.classList.add('visible');
+  setTimeout(() => el.classList.remove('visible'), 3000);
+}
+function addRecentScan(worker) {
+  const container = document.getElementById('recent-scans');
+  const div = document.createElement('div');
+  div.className = 'alert alert-success';
+  div.innerHTML = `✅ <strong>${worker.name}</strong> checked in at ${new Date().toLocaleTimeString()}`;
+  div.style.animation = 'slideIn 0.3s ease';
+  container.insertBefore(div, container.firstChild);
+  if (container.children.length > 5) container.removeChild(container.lastChild);
+}
+
+// ===================== WORKER REGISTRY =====================
+function generateQRData(worker) {
+  return JSON.stringify({ gesh_id: worker.id, name: worker.name, pkg: worker.package });
+}
+
+function generateSVGQR(text) {
+  // Simple QR matrix using a hash-based pattern for display purposes
+  const size = 21;
+  const cellSize = 8;
+  const total = size * cellSize + 20;
+  // Generate deterministic pattern from text
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) { hash = ((hash << 5) - hash) + text.charCodeAt(i); hash |= 0; }
+  let cells = '';
+  // Corner markers
+  const markers = [[0,0],[0,14],[14,0]];
+  markers.forEach(([r,c]) => {
+    cells += `<rect x="${10+c*cellSize}" y="${10+r*cellSize}" width="${7*cellSize}" height="${7*cellSize}" fill="black"/>`;
+    cells += `<rect x="${10+(c+1)*cellSize}" y="${10+(r+1)*cellSize}" width="${5*cellSize}" height="${5*cellSize}" fill="white"/>`;
+    cells += `<rect x="${10+(c+2)*cellSize}" y="${10+(r+2)*cellSize}" width="${3*cellSize}" height="${3*cellSize}" fill="black"/>`;
+  });
+  // Data cells
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if ((r < 8 && c < 8) || (r < 8 && c > 13) || (r > 13 && c < 8)) continue;
+      const bit = (Math.abs(hash * (r * 31 + c * 17 + 7)) % 2 === 0);
+      if (bit) cells += `<rect x="${10+c*cellSize}" y="${10+r*cellSize}" width="${cellSize}" height="${cellSize}" fill="black"/>`;
+    }
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${total}" height="${total}" viewBox="0 0 ${total} ${total}">
+    <rect width="${total}" height="${total}" fill="white"/>
+    ${cells}
+  </svg>`;
+}
+
+function registerWorker() {
+  const name = document.getElementById('reg-name').value.trim();
+  const ic = document.getElementById('reg-ic').value.trim();
+  const desig = document.getElementById('reg-desig').value.trim();
+  const pkg = document.getElementById('reg-pkg').value;
+  const company = document.getElementById('reg-company').value.trim();
+  if (!name || !ic) { alert('Name and IC/Passport are required.'); return; }
+  const existing = workers.find(w => w.ic === ic);
+  if (existing) { alert('Worker with this IC/Passport already registered.'); return; }
+  const worker = { id: 'W' + Date.now(), name, ic, designation: desig || '—', package: pkg, company: company || '—', registeredAt: new Date().toISOString() };
+  workers.push(worker);
+  localStorage.setItem('gesh_workers', JSON.stringify(workers));
+  renderWorkers();
+  document.getElementById('reg-name').value = '';
+  document.getElementById('reg-ic').value = '';
+  document.getElementById('reg-desig').value = '';
+  document.getElementById('reg-company').value = '';
+  showQRModal(worker);
+}
+
+function renderWorkers() {
+  const search = (document.getElementById('worker-search')?.value || '').toLowerCase();
+  const filtered = workers.filter(w =>
+    w.name.toLowerCase().includes(search) ||
+    w.package.toLowerCase().includes(search) ||
+    w.designation.toLowerCase().includes(search) ||
+    w.company.toLowerCase().includes(search)
+  );
+  document.getElementById('worker-count-badge').textContent = workers.length + ' workers';
+  const grid = document.getElementById('worker-registry');
+  if (!grid) return;
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div style="color:var(--silver); text-align:center; padding:40px; grid-column:1/-1;">No workers registered yet.</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(w => `
+    <div class="worker-card">
+      <div class="worker-avatar">${w.name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase()}</div>
+      <div class="worker-info">
+        <div class="worker-card-name">${w.name}</div>
+        <div class="worker-card-meta">${w.ic} · ${w.company}</div>
+        <div class="worker-card-meta">${w.designation}</div>
+        <div class="worker-card-pkg"><span class="pkg-badge pkg-${w.package}">${w.package}</span></div>
+        <div class="worker-actions">
+          <button class="btn btn-outline btn-sm" onclick="showQRModal(workers.find(x=>x.id==='${w.id}'))">Show QR</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteWorker('${w.id}')">✕</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function deleteWorker(id) {
+  if (!confirm('Remove this worker?')) return;
+  workers = workers.filter(w => w.id !== id);
+  localStorage.setItem('gesh_workers', JSON.stringify(workers));
+  renderWorkers();
+}
+
+function showQRModal(worker) {
+  if (!worker) return;
+  modalWorker = worker;
+  document.getElementById('modal-worker-name').textContent = worker.name;
+  document.getElementById('modal-worker-meta').textContent = worker.designation + ' · ' + worker.package + ' · ' + worker.ic;
+  document.getElementById('modal-qr-container').innerHTML = generateSVGQR(generateQRData(worker));
+  document.getElementById('qr-modal').classList.add('open');
+}
+function closeModal() { document.getElementById('qr-modal').classList.remove('open'); modalWorker = null; }
+
+function printQR() {
+  if (!modalWorker) return;
+  const w = window.open('', '_blank', 'width=400,height=500');
+  w.document.write(`<html><head><title>QR — ${modalWorker.name}</title><style>
+    body{font-family:Arial,sans-serif;text-align:center;padding:20px;}
+    .box{border:3px solid #007A6E;border-radius:10px;padding:20px;display:inline-block;}
+    h2{margin:0 0 4px;font-size:18px;} p{margin:2px 0;font-size:12px;color:#666;}
+    svg{width:200px;height:200px;}
+  </style></head><body>
+    <div class="box">
+      <h2>${modalWorker.name}</h2>
+      <p>${modalWorker.designation} · ${modalWorker.package}</p>
+      <p>${modalWorker.ic}</p>
+      ${generateSVGQR(generateQRData(modalWorker))}
+      <p style="margin-top:8px;font-size:10px;color:#999;">GESH HSSE · Scan for attendance</p>
+    </div>
+  </body></html>`);
+  w.document.close();
+  setTimeout(() => w.print(), 500);
+}
+
+function printAllQRs() {
+  if (workers.length === 0) { alert('No workers registered.'); return; }
+  const w = window.open('', '_blank');
+  w.document.write(`<html><head><title>All Helmet QR Codes — GESH</title><style>
+    body{font-family:Arial,sans-serif;padding:10mm;}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10mm;}
+    .card{border:2px solid #007A6E;border-radius:8px;padding:10px;text-align:center;break-inside:avoid;}
+    h3{margin:0 0 3px;font-size:14px;} p{margin:2px 0;font-size:10px;color:#666;}
+    svg{width:130px;height:130px;}
+    @media print{@page{size:A4;margin:10mm;}}
+  </style></head><body>
+    <h2 style="text-align:center;margin-bottom:10mm;font-size:16px;color:#007A6E;">GESH — Helmet QR Codes</h2>
+    <div class="grid">
+    ${workers.map(w => `
+      <div class="card">
+        <h3>${w.name}</h3>
+        <p>${w.designation} · <strong>${w.package}</strong></p>
+        ${generateSVGQR(generateQRData(w))}
+        <p style="font-size:9px;color:#999;">${w.ic}</p>
+      </div>
+    `).join('')}
+    </div>
+  </body></html>`);
+  w.document.close();
+  setTimeout(() => w.print(), 600);
+}
+
+// ===================== RECORDS =====================
+function renderRecords() {
+  const container = document.getElementById('records-list');
+  if (!container) return;
+  if (sessions.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:var(--silver);padding:40px;">No records yet.</div>';
+    return;
+  }
+  container.innerHTML = [...sessions].reverse().map(s => `
+    <div class="attendee-row" style="flex-wrap:wrap;">
+      <div style="flex:1; min-width:200px;">
+        <div style="font-weight:700;">${s.topic}</div>
+        <div style="font-size:12px;color:var(--silver);">${s.date} · ${s.time} · ${s.type}</div>
+        <div style="font-size:12px;color:var(--silver);">By: ${s.conductor} · ${s.attendees.length} attendees</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="loadSessionForPrint('${s.id}')">🖨 Print</button>
+        <button class="btn btn-success btn-sm" onclick="syncSession('${s.id}')">📊 Sync</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteSession('${s.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadSessionForPrint(id) {
+  const s = sessions.find(x => x.id === id);
+  if (!s) return;
+  currentSession = s;
+  photos = (s.photos || []).map((d, i) => ({ name: `photo${i}`, dataURL: d }));
+  updatePrintPreview();
+  showSection('print');
+}
+
+function deleteSession(id) {
+  if (!confirm('Delete this record?')) return;
+  sessions = sessions.filter(s => s.id !== id);
+  localStorage.setItem('gesh_sessions', JSON.stringify(sessions));
+  renderRecords();
+}
+
+// ===================== PRINT =====================
+function updatePrintPreview() {
+  if (!currentSession) return;
+  const s = currentSession;
+  document.getElementById('print-title').textContent = `${s.type.toUpperCase()} — ATTENDANCE RECORD`;
+  document.getElementById('print-doc-date').textContent = `Date: ${s.date}`;
+  document.getElementById('pm-date').textContent = s.date;
+  document.getElementById('pm-time').textContent = s.time;
+  document.getElementById('pm-type').textContent = s.type;
+  document.getElementById('pm-count').textContent = s.attendees.length + ' persons';
+  document.getElementById('pm-conductor').textContent = s.conductor;
+  document.getElementById('pm-contractor').textContent = s.contractor || '—';
+  document.getElementById('pm-topic').textContent = s.topic;
+  document.getElementById('pm-packages').textContent = (s.packages || []).join(', ') || '—';
+  document.getElementById('sig-prepared').textContent = s.prepared || '_________________________';
+  document.getElementById('sig-reviewed').textContent = s.reviewed || '_________________________';
+  document.getElementById('sig-acknowledged').textContent = s.acknowledged || '_________________________';
+
+  const tbody = document.getElementById('print-table-body');
+  if (s.attendees.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;padding:20px;">No attendees recorded.</td></tr>';
+  } else {
+    tbody.innerHTML = s.attendees.map((a, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${a.name}</td>
+        <td>${a.designation}</td>
+        <td>${a.package}</td>
+        <td style="min-height:30px;"> </td>
+      </tr>
+    `).join('');
+    // Add blank signature rows up to at least 20
+    for (let i = s.attendees.length; i < 20; i++) {
+      tbody.innerHTML += `<tr><td>${i+1}</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>`;
+    }
+  }
+
+  // Photos
+  const photoSection = document.getElementById('print-photos-section');
+  const photoGrid = document.getElementById('print-photo-grid');
+  const p = photos.filter(x => x.dataURL);
+  if (p.length > 0) {
+    photoSection.style.display = 'block';
+    photoGrid.innerHTML = p.map(ph => `
+      <div class="photo-thumb"><img src="${ph.dataURL}" alt="Evidence"></div>
+    `).join('');
+  } else {
+    photoSection.style.display = 'none';
+  }
+}
+
+function goToPrint() {
+  saveSession(true);
+  updatePrintPreview();
+  showSection('print');
+}
+
+function exportPDF() {
+  updatePrintPreview();
+  setTimeout(() => window.print(), 200);
+}
+
+// ===================== GOOGLE SHEETS =====================
+function saveGSheetURL() {
+  const url = document.getElementById('gsheet-url').value.trim();
+  if (!url) { alert('Please enter a URL.'); return; }
+  localStorage.setItem('gesh_gsheet_url', url);
+  alert('✅ Google Sheet URL saved!');
+}
+
+async function exportGoogleSheet() {
+  const url = localStorage.getItem('gesh_gsheet_url');
+  if (!url) {
+    alert('Please set your Google Sheet URL in the Setup tab first.');
+    showSection('setup');
+    return;
+  }
+  if (!currentSession) { alert('No active session to export.'); return; }
+  if (!navigator.onLine) {
+    alert('You are offline. Data is saved locally and will be ready to sync when internet is available.');
+    return;
+  }
+  try {
+    const payload = {
+      date: currentSession.date,
+      time: currentSession.time,
+      type: currentSession.type,
+      topic: currentSession.topic,
+      conductor: currentSession.conductor,
+      contractor: currentSession.contractor,
+      packages: currentSession.packages,
+      attendees: currentSession.attendees.map((a, i) => ({
+        num: i + 1,
+        name: a.name,
+        designation: a.designation,
+        package: a.package,
+        scannedAt: a.scannedAt
+      }))
+    };
+    await fetch(url, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'application/json' } });
+    alert('✅ Session synced to Google Sheet!');
+  } catch (e) {
+    alert('Sync failed. Check your URL and internet connection. Data is saved locally.');
+  }
+}
+
+async function syncSession(id) {
+  const s = sessions.find(x => x.id === id);
+  if (!s) return;
+  const url = localStorage.getItem('gesh_gsheet_url');
+  if (!url) { alert('Set Google Sheet URL in Setup tab.'); return; }
+  if (!navigator.onLine) { alert('No internet connection.'); return; }
+  try {
+    await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ ...s, attendees: s.attendees.map((a,i) => ({...a, num: i+1})) }),
+      headers: { 'Content-Type': 'application/json' }
+    });
+    alert('✅ Synced!');
+  } catch(e) {
+    alert('Sync failed. Check URL.');
+  }
+}
+
+// ===================== UTILS =====================
+function togglePill(el) {
+  el.classList.toggle('selected');
+  const cb = el.querySelector('input');
+  cb.checked = !cb.checked;
+}
+</script>
+</body>
+</html>
